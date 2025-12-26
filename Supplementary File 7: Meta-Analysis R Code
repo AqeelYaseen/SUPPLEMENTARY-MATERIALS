@@ -1,0 +1,246 @@
+Complete R Script for Reproducibility
+Copy# ============================================================================
+# META-ANALYSIS OF CURCUMIN-PDT IN BREAST CANCER
+# R Script for Reproducibility
+# Author: [Name]
+# Date: December 2024
+# ============================================================================
+
+# Load required packages
+library(metafor)
+library(dplyr)
+library(ggplot2)
+library(metaviz)
+library(dmetar)
+
+# ============================================================================
+# 1. DATA IMPORT
+# ============================================================================
+
+# Load dataset (Supplementary Data File 1)
+data <- read.csv("curcumin_pdt_data.csv", header = TRUE)
+
+# View structure
+str(data)
+head(data)
+
+# ============================================================================
+# 2. EFFECT SIZE CALCULATION
+# ============================================================================
+
+# Calculate Hedges' g for each comparison
+# Formula: g = J(n) * (M_control - M_treatment) / SD_pooled
+# Where J(n) is small-sample bias correction
+
+data <- escalc(measure = "SMD",  # Standardized Mean Difference
+               m1i = mean_control,
+               m2i = mean_treatment,
+               sd1i = sd_control,
+               sd2i = sd_treatment,
+               n1i = n_control,
+               n2i = n_treatment,
+               data = data,
+               slab = study_id)
+
+# Apply Hedges' correction (converts Cohen's d to Hedges' g)
+data$yi <- data$yi * (1 - 3 / (4 * (data$n_control + data$n_treatment - 2) - 1))
+
+# ============================================================================
+# 3. OVERALL META-ANALYSIS (NORMOXIC CONDITIONS)
+# ============================================================================
+
+# Subset normoxic studies
+data_normoxia <- filter(data, oxygen_condition == "Normoxia")
+
+# Random-effects model (DerSimonian-Laird estimator)
+res_normoxia <- rma(yi = yi, 
+                    vi = vi, 
+                    data = data_normoxia,
+                    method = "DL",
+                    slab = study_id)
+
+# Display results
+summary(res_normoxia)
+
+# Pooled effect size
+cat("Pooled Hedges' g (Normoxia):", round(res_normoxia$b, 2), "\n")
+cat("95% CI: [", round(res_normoxia$ci.lb, 2), ", ", 
+    round(res_normoxia$ci.ub, 2), "]\n")
+cat("P-value:", format.pval(res_normoxia$pval, eps = 0.001), "\n")
+
+# Heterogeneity statistics
+cat("\nHeterogeneity:\n")
+cat("Q =", round(res_normoxia$QE, 2), ", df =", res_normoxia$k - 1, 
+    ", P =", format.pval(res_normoxia$QEp, eps = 0.001), "\n")
+cat("I² =", round(res_normoxia$I2, 2), "%\n")
+cat("τ² =", round(res_normoxia$tau2, 3), "\n")
+
+# ============================================================================
+# 4. HYPOXIC/ANOXIC CONDITIONS
+# ============================================================================
+
+data_hypoxia <- filter(data, oxygen_condition %in% c("Hypoxia", "Anoxia"))
+
+res_hypoxia <- rma(yi = yi, 
+                   vi = vi, 
+                   data = data_hypoxia,
+                   method = "DL",
+                   slab = study_id)
+
+summary(res_hypoxia)
+
+# ============================================================================
+# 5. SUBGROUP ANALYSIS BY OXYGEN LEVEL
+# ============================================================================
+
+# Define oxygen categories
+data$oxygen_cat <- cut(data$oxygen_percent,
+                       breaks = c(-Inf, 0.1, 2, 5, 21),
+                       labels = c("Anoxia (<0.1%)", 
+                                 "Severe Hypoxia (1-2%)",
+                                 "Moderate Hypoxia (2-5%)",
+                                 "Normoxia (21%)"))
+
+# Subgroup meta-analysis
+res_subgroup <- rma(yi = yi, 
+                    vi = vi, 
+                    mods = ~ oxygen_cat - 1,  # -1 removes intercept
+                    data = data,
+                    method = "DL")
+
+summary(res_subgroup)
+
+# Test for subgroup differences
+anova(res_subgroup)
+
+# ============================================================================
+# 6. MODERATOR ANALYSIS (META-REGRESSION)
+# ============================================================================
+
+# Continuous moderator: Light dose
+res_light_dose <- rma(yi = yi, 
+                      vi = vi, 
+                      mods = ~ light_dose_j_cm2,
+                      data = data_normoxia,
+                      method = "REML")
+
+summary(res_light_dose)
+
+# Continuous moderator: Curcumin concentration
+res_curcumin_conc <- rma(yi = yi, 
+                         vi = vi, 
+                         mods = ~ curcumin_uM,
+                         data = data_normoxia,
+                         method = "REML")
+
+summary(res_curcumin_conc)
+
+# Categorical moderator: Wavelength
+res_wavelength <- rma(yi = yi, 
+                      vi = vi, 
+                      mods = ~ wavelength_cat,
+                      data = data_normoxia,
+                      method = "REML")
+
+summary(res_wavelength)
+
+# Categorical moderator: Formulation
+res_formulation <- rma(yi = yi, 
+                       vi = vi, 
+                       mods = ~ formulation,
+                       data = data_normoxia,
+                       method = "REML")
+
+summary(res_formulation)
+
+# ============================================================================
+# 7. PUBLICATION BIAS ASSESSMENT
+# ============================================================================
+
+# Funnel plot
+funnel(res_normoxia, 
+       main = "Funnel Plot: Curcumin-PDT Normoxic Studies",
+       xlab = "Hedges' g")
+
+# Egger's regression test
+regtest(res_normoxia, model = "lm")
+
+# Trim-and-fill method
+taf_result <- trimfill(res_normoxia)
+summary(taf_result)
+
+# Visualize trim-and-fill
+funnel(taf_result, 
+       main = "Trim-and-Fill Analysis",
+       legend = TRUE)
+
+# ============================================================================
+# 8. SENSITIVITY ANALYSIS
+# ============================================================================
+
+# Influence diagnostics
+inf <- influence(res_normoxia)
+print(inf)
+plot(inf)
+
+# Leave-one-out analysis
+loo_result <- leave1out(res_normoxia)
+print(loo_result)
+
+# Restrict to high-quality studies only
+data_high_quality <- filter(data_normoxia, quality == "High")
+res_high_quality <- rma(yi = yi, 
+                        vi = vi, 
+                        data = data_high_quality,
+                        method = "DL")
+summary(res_high_quality)
+
+# ============================================================================
+# 9. FOREST PLOTS
+# ============================================================================
+
+# Standard forest plot
+forest(res_normoxia,
+       xlim = c(-2, 6),
+       header = TRUE,
+       xlab = "Hedges' g (95% CI)",
+       mlab = "POOLED EFFECT (Random-Effects Model)",
+       ilab = cbind(data_normoxia$n_control, data_normoxia$n_treatment),
+       ilab.xpos = c(-1.5, -1),
+       cex = 0.8)
+
+# Add column labels
+text(c(-1.5, -1), res_normoxia$k + 2, c("N_control", "N_treatment"), cex = 0.8)
+
+# Subgroup forest plot
+forest(res_subgroup,
+       xlim = c(-1, 4),
+       header = TRUE,
+       xlab = "Hedges' g by Oxygen Condition")
+
+# ============================================================================
+# 10. EXPORT RESULTS
+# ============================================================================
+
+# Create results summary
+results_summary <- data.frame(
+  Analysis = c("Normoxia", "Hypoxia/Anoxia", "High-Quality Only"),
+  N_studies = c(res_normoxia$k, res_hypoxia$k, res_high_quality$k),
+  Hedges_g = c(res_normoxia$b, res_hypoxia$b, res_high_quality$b),
+  CI_lower = c(res_normoxia$ci.lb, res_hypoxia$ci.lb, res_high_quality$ci.lb),
+  CI_upper = c(res_normoxia$ci.ub, res_hypoxia$ci.ub, res_high_quality$ci.ub),
+  P_value = c(res_normoxia$pval, res_hypoxia$pval, res_high_quality$pval),
+  I2 = c(res_normoxia$I2, res_hypoxia$I2, res_high_quality$I2)
+)
+
+write.csv(results_summary, "meta_analysis_results.csv", row.names = FALSE)
+
+# Session info for reproducibility
+sessionInfo()
+Data File Format (CSV)
+study_id,oxygen_condition,oxygen_percent,mean_control,sd_control,n_control,mean_treatment,sd_treatment,n_treatment,light_dose_j_cm2,wavelength_nm,curcumin_uM,formulation,quality
+Das_2020,Normoxia,21,100,8.5,6,42,7.2,6,6,365,10,Free,High
+Das_2020,Hypoxia,1,100,9.1,6,85,8.8,6,6,365,10,Free,High
+Yaseen_2021,Normoxia,21,100,12.3,4,55,10.8,4,4,365,10,Free,Low
+Yaseen_2021,Anoxia,0.05,100,14.2,4,92,11.5,4,4,365,10,Free,Low
+[Additional rows...]
