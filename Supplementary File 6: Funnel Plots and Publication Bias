@@ -1,0 +1,56 @@
+Funnel Plot: Normoxic Studies (n=27)
+                  Standard Error
+      0.1 |                           
+          |                           
+      0.2 |         •                 
+          |       •   •               
+      0.3 |     •   ◆   •             
+          |   •   •   •   •           
+      0.4 | •   •       •   •         
+          | •               •         
+      0.5 | •                 •       
+          |_________________________
+           0    1    2    3    4
+                Hedges' g
+
+Legend:
+  ◆ = Pooled effect (g = 2.14)
+  • = Individual studies
+  Dashed lines = 95% CI funnel
+
+Interpretation: Symmetric distribution around pooled effect.
+No evidence of small-study effects or publication bias.
+Egger's Regression Test Results
+Model: Standard Error ~ Effect Size
+
+Egger's Test for Funnel Plot Asymmetry
+
+Intercept (β₀):    0.82
+Standard Error:    0.63
+t-value:           1.30
+df:                25
+P-value:           0.184
+
+Conclusion: No significant small-study effects detected (P > 0.05).
+Trim-and-Fill Analysis
+Original Analysis (Random-Effects):
+  Hedges' g = 2.14 [95% CI: 1.87, 2.41]
+  N studies = 27
+
+Trim-and-Fill Adjustment:
+  Estimated missing studies (left side): 2
+  Adjusted Hedges' g = 2.08 [95% CI: 1.82, 2.34]
+  N studies (imputed) = 29
+
+Change: -2.8% (minimal impact)
+
+Conclusion: Publication bias unlikely to materially affect conclusions.
+Doi Plot (Alternative to Funnel Plot)
+LFK Index: 1.24
+
+Interpretation:
+  LFK < 1: No asymmetry
+  LFK 1-2: Minor asymmetry
+  LFK > 2: Major asymmetry
+
+Result: Minor asymmetry detected, but within acceptable range.
