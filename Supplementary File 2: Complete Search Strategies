@@ -1,0 +1,80 @@
+Complete Search Strategies
+PubMed/MEDLINE Search Strategy (Executed December 15, 2024)
+Search #1: Curcumin terms
+("curcumin"[Title/Abstract] OR "diferuloylmethane"[Title/Abstract] OR 
+"curcuminoid"[Title/Abstract] OR "turmeric extract"[Title/Abstract] OR 
+"Curcuma longa"[Title/Abstract])
+
+Search #2: PDT terms
+("photodynamic therapy"[Title/Abstract] OR "PDT"[Title/Abstract] OR 
+"photosensitizer"[Title/Abstract] OR "photosensitiser"[Title/Abstract] OR 
+"photo-activation"[Title/Abstract] OR "photoactivation"[Title/Abstract] OR 
+"light-activated"[Title/Abstract] OR "photo-oxidation"[Title/Abstract])
+
+Search #3: Breast cancer terms
+("breast cancer"[Title/Abstract] OR "breast carcinoma"[Title/Abstract] OR 
+"breast adenocarcinoma"[Title/Abstract] OR "breast neoplasm"[Title/Abstract] OR 
+"mammary tumor"[Title/Abstract] OR "mammary carcinoma"[Title/Abstract] OR 
+"MDA-MB-231"[Title/Abstract] OR "MCF-7"[Title/Abstract] OR "MCF7"[Title/Abstract] OR 
+"T47D"[Title/Abstract] OR "BT-474"[Title/Abstract] OR "SK-BR-3"[Title/Abstract] OR 
+"4T1"[Title/Abstract])
+
+Search #4: Oxygen condition terms
+("hypoxia"[Title/Abstract] OR "anoxia"[Title/Abstract] OR "normoxia"[Title/Abstract] OR 
+"oxygen tension"[Title/Abstract] OR "oxygen concentration"[Title/Abstract] OR 
+"oxygen-independent"[Title/Abstract] OR "oxygen independent"[Title/Abstract] OR 
+"low oxygen"[Title/Abstract] OR "oxygen deprivation"[Title/Abstract] OR 
+"HIF-1"[Title/Abstract] OR "HIF-1alpha"[Title/Abstract])
+
+Search #5: Combined search with date filter
+#1 AND #2 AND #3 AND #4
+Filters: 
+- Publication date: 2019/01/01 to 2024/12/31
+- Language: English
+- Article types: Journal Article, Research Support
+
+Results: 423 records
+Web of Science Core Collection Search Strategy (Executed December 16, 2024)
+TS=(curcumin OR diferuloylmethane OR turmeric) 
+AND TS=("photodynamic therapy" OR PDT OR photosensitizer) 
+AND TS=("breast cancer" OR "breast carcinoma" OR MDA-MB-231 OR MCF-7 OR T47D) 
+AND TS=(hypoxia OR anoxia OR normoxia OR "oxygen tension")
+
+Refined by:
+- Timespan: 2019-2024
+- Document Types: Article
+- Language: English
+
+Results: 512 records
+Google Scholar Search Strategy (Executed December 17, 2024)
+Search Query:
+curcumin "photodynamic therapy" "breast cancer" (hypoxia OR normoxia OR oxygen)
+
+Settings:
+- Custom date range: 2019-2024
+- Sorted by relevance
+- Excluded patents and citations
+
+First 200 results screened
+
+Results: 912 records (200 screened)
+Grey Literature Sources
+Conference Proceedings Searched:
+
+SPIE Photonics West (2019-2024)
+
+BiOS (Biomedical Optics)
+Search terms: curcumin, breast cancer, PDT
+Results: 8 conference papers identified, 2 had corresponding peer-reviewed publications
+World Congress of Photodynamic Medicine (WCPD) 2021, 2023
+
+Abstract books searched manually
+Results: 3 relevant abstracts, authors contacted for full data
+Preprint Servers:
+
+bioRxiv: Searched "curcumin photodynamic breast" (2019-2024) → 6 preprints identified
+medRxiv: Searched "curcumin PDT cancer hypoxia" (2019-2024) → 2 preprints identified
+Trial Registries:
+
+ClinicalTrials.gov: Searched "curcumin photodynamic breast cancer" → 0 completed trials
+WHO ICTRP: Searched "curcumin PDT" → 0 relevant trials
